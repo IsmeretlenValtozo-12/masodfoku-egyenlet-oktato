@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Másodfokú Egyenlet Megoldó és Vizualizáló</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body { font-family: sans-serif; margin: 20px; line-height: 1.6; background-color: #f4f4f9; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .input-section { display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+        input { width: 60px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        #result { padding: 15px; border-left: 5px solid #2196F3; background: #e3f2fd; margin-top: 20px; }
+        .formula { font-style: italic; color: #555; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Másodfokú Egyenlet Megoldó</h1>
+    <p class="formula">Általános alak: $ax^2 + bx + c = 0$</p>
+    
+    <div class="input-section">
+        <label>a: <input type="number" id="a" value="1" oninput="update()"></label>
+        <label>b: <input type="number" id="b" value="2" oninput="update()"></label>
+        <label>c: <input type="number" id="c" value="-3" oninput="update()"></label>
+    </div>
+
+    <div id="result">Adja meg az együtthatókat a számításhoz!</div>
+    
+    <div id="plot" style="width:100%; height:400px;"></div>
+</div>
+
+<script>
+function update() {
+    const a = parseFloat(document.getElementById('a').value) || 0;
+    const b = parseFloat(document.getElementById('b').value) || 0;
+    const c = parseFloat(document.getElementById('c').value) || 0;
+    const resultDiv = document.getElementById('result');
+
+    if (a === 0) {
+        resultDiv.innerHTML = "Ez egy elsőfokú egyenlet!";
+        drawGraph(a, b, c);
+        return;
+    }
+
+    const d = b * b - 4 * a * c;
+    let text = `<b>Diszkrimináns (D):</b> ${d}<br>`;
+
+    if (d > 0) {
+        const x1 = (-b + Math.sqrt(d)) / (2 * a);
+        const x2 = (-b - Math.sqrt(d)) / (2 * a);
+        text += `Két valós megoldás van: <br><b>x₁ = ${x1.toFixed(2)}</b><br><b>x₂ = ${x2.toFixed(2)}</b>`;
+    } else if (d === 0) {
+        const x = -b / (2 * a);
+        text += `Egy valós megoldás van: <br><b>x = ${x.toFixed(2)}</b>`;
+    } else {
+        text += "Nincs valós megoldás (a diszkrimináns negatív).";
+    }
+
+    resultDiv.innerHTML = text;
+    drawGraph(a, b, c);
+}
+
+function drawGraph(a, b, c) {
+    const xValues = [];
+    const yValues = [];
+    for (let x = -10; x <= 10; x += 0.1) {
+        xValues.push(x);
+        yValues.push(a * x * x + b * x + c);
+    }
+
+    const trace = {
+        x: xValues,
+        y: yValues,
+        type: 'scatter',
+        name: 'f(x)',
+        line: {color: '#2196F3', width: 3}
+    };
+
+    const layout = {
+        title: 'A függvény grafikonja',
+        xaxis: {title: 'x', range: [-10, 10], zeroline: true},
+        yaxis: {title: 'f(x)', zeroline: true},
+        margin: { t: 50, b: 50, l: 50, r: 50 }
+    };
+
+    Plotly.newPlot('plot', [trace], layout);
+}
+
+// Kezdő hívás
+update();
+</script>
+
+</body>
+</html>
